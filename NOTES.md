@@ -12,8 +12,8 @@
 
 ### Numeric constants
 - numeric constant can by typed or untyped; if untyped - it exists out of typed context
-- untyped: that means it can precisely hold arbitrarly large (or small) numeric values which can cause problems when used in typed context - constrained by compiler (at least 256 bits)
-  for example: uint64 can hold 64 bit integer at max, its value is <= 2^64, constant can hold values that are > 2^64 (2^100, ...).
+- untyped: that means it can precisely hold arbitrarly large (or small) numeric values which can cause problems when used in typed context (spec guarantees at least 256 bits)
+  for example: uint64 can hold 64 bit integer at max, its value is <= 2^64 - 1, constant can hold values that are > 2^64 (2^100, ...).
   arithmetic over constants still keeps them in constants space - they are not moved into typed space when doing arithmetic
 - typed constants are constrained by type
 
@@ -58,5 +58,15 @@
 - []T is type 'slice of type T'
 - view into underlying array; does not store data (it consists of: pointer to the underlying array, length and capacity)
 - changing the elements of a slice modifies the corresponding elements of its underlying array.
+- zero value is nil
+- defined with: pointer to underlying array, length, capacity
+- length: number of elements it contains (len(s))
+- capacity: number of elements in underlying array counting from the start of slice (cap(s))
+- append(): variadic function
+- append(): creates a new slice, adds element to the end of given slice and returns a new slice; 
+- append(): if there is room in underlying array it will write to underlying array, otherwise it will allocate new underlying array and copy existing array into it
+- make(): creates a new slice, creates underlying array as well
 
-
+### Range
+- range iterates over a slice (among other types)
+- over slice: 2 values returned for each iteration: index and copy of the element at that index
