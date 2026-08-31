@@ -53,6 +53,7 @@
 ### Arrays
 - [n]T is type 'array of n elements of type T'
 - dimension is part of the type
+- array value contains all its elements, so copying copies all that data
 
 ### Slices
 - []T is type 'slice of type T'
@@ -66,7 +67,56 @@
 - append(): creates a new slice, adds element to the end of given slice and returns a new slice; 
 - append(): if there is room in underlying array it will write to underlying array, otherwise it will allocate new underlying array and copy existing array into it
 - make(): creates a new slice, creates underlying array as well
+- slice value contains 3 elements (pointer to array, length, capacity), so copying copies those 3 elements
 
 ### Range
 - range iterates over a slice (among other types)
 - over slice: 2 values returned for each iteration: index and copy of the element at that index
+
+## Aug 30, 2026
+
+### Maps
+- type: map[KeyType]ValueType
+- zero value: nil
+- create: make(map[KeyType]ValueType)
+- key type: must be comparable using == and !=
+- cannot be key: slice, map, function
+- insert or update: m[key] = value
+- retrieve: value = m[key]
+- remove: delete(m, key)
+- check exists: elem, ok  = m[key] , if key is in m, ok is true, otherwise it's false and elem is 0-value for map's value type
+- map value contains a pointer to runtime hash map, so copying copies that pointer
+
+### Functions
+- functions are values
+- functions can be used as arguments and return values
+- functions may be closures. Closure is function value with environment, that can be referenced from within function (free variables). Captured variables (which form environment) are shared by reference.
+
+### Methods
+- go can define methods on types (it does not have classes)
+- method: function with a special receiver argument
+- methods can only be defined with a receiver whose type is defined in the same package as the method, and receiver must not iteself be a pointer type or an interface type
+- methods can be defined for pointer receivers (*T as well as T) and in these case they modify receiver; with value receiver they work on copy of receiver (as all other arguments do)
+- for convience, if v is type T, go interprets the statement v.Method() as (&v).Method() when Method is defined on pointer receiver (\*T); v must be addressable
+- for convience, if p is type \*T, go interprets the statement p.Method() as (\*p) .Method() when Method is defined on value receiver (T)
+- value vs pointer receiver: pointer receiver can modify and avoids copying
+- for type all methods should be uniform - either all on value receiver or all on pointer receiver
+
+### Interfaces
+- interface is a type defined by a set of method signatures
+- a value of interface type can hold any value that implements those methods
+- a type implements an interface by implementing its methods
+- interface type that specifies 0 methods: interface{}
+- any: alias for interface{}, these 2 (any and interface{} are interchangeable)
+- concrete interface value: (type, value) pair: dynamic type + dynamic value
+- nil interface = (nil, nil); calling a method on it panics
+- interface holding a nil pointer is NOT nil: (*T, nil) != nil
+
+### Type assertions
+- type assertion: provides access to an interface's value underlying concrete (interface) value
+- t := i.(T) // i must be interface type, this statement asserts that value i of type interface, has underlying value (a pair component) of type T, and assigns it to a value t
+-            // if T is concrete type, i's dynamic type must be exactly T
+-            // if T is interface type, i's dynamic type must implement T; result t is of interface type T
+-            // if i does not hold value of type T, this statement will panic - runtime error
+- t, ok := i.(T) // this tests whether i (of type interface) has an underlying value of type T, ok is bool, and t is either value of type T (if ok == true) or zero for wanted type
+-                // no panic
