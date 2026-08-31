@@ -120,3 +120,30 @@
 -            // if i does not hold value of type T, this statement will panic - runtime error
 - t, ok := i.(T) // this tests whether i (of type interface) has an underlying value of type T, ok is bool, and t is either value of type T (if ok == true) or zero for wanted type
 -                // no panic
+
+## Aug 31, 2026
+
+### Type switches
+- type switch: construct that allows several type assertions in series
+- type switch: like a regular switch statements, but cases are types and those cases are compared by interface value underlying type
+- example
+```go
+switch v := i.(type) {
+case T:
+    // here v has type T
+case S:
+    // here v has type S
+default:
+    // no match; here v has the same type as i
+}
+```
+
+### Errors
+- go programs express error state with `error` values
+- `error` type is built in interface:
+```
+type error interface {
+    Error() string
+}
+```
+- a nil error denotes success, a non-nil error denotes failure
