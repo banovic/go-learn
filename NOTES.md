@@ -147,3 +147,35 @@ type error interface {
 }
 ```
 - a nil error denotes success, a non-nil error denotes failure
+
+## Sep 1, 2026
+
+### Type parameters
+- go functions can work on types defined by type parameters
+- example: `func Index[T comparable](s []T, x T) int`
+
+### Generic types
+- type can be parametrized by type parameter
+
+### Goroutines
+- goroutine is lightweigh thread managed by go runtime
+- `go f(x, y, z)` evaluates f, x, y, z in current gorouting, but execution of `f(x, y, z)` happens in new goroutine
+- goroutines share same address space, so access to shared data must by synchronised
+
+### Channels
+- channel is conduit through which data can be sent and received
+- channel operator `<-`, data flows in direction of arrow: `ch <- v` sends v to channel, `v := <- ch` receive v from channel
+- channels must be created before use: `make(chan int)`
+- by default sends and receives block until other side is ready
+- channels can be buffered: `make(chan int, 100)` (second arg is buffer size)
+- sends to a buffered channel block only when buffer is full
+- receives from a buffere channel block only when buffer is empty
+- sender can close channel to indicate that no more values will be sent (only sender should close channel, never receiver, sending on closed channel is panic)
+- receivers can test whether channel has been closed by assigning second parameter: `v, ok := <-ch` (ok is false when channel is closed)
+- the loop `for v := range ch` will receive values from channel repeatedly until channel is closed
+- select statement lets gorouting wait on multiple communication operations (ie. each case is either send or receive)
+- select blocks until one of its cases can run, then executes that case
+- select chooses one case randomly if multiple are ready
+- default case in select statement runs if no other case is ready
+- default case - send or receive without blocking
+- select with no cases blocks forever
